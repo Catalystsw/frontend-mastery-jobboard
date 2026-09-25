@@ -1,4 +1,4 @@
-# Stage m07-autocomplete — the search box
+# Stage module-7/autocomplete — the search box
 
 **Module 7 · UI Engineering: Components & Accessibility**
 
@@ -12,7 +12,7 @@ of them.
 
 | # | Skill | The failure mode |
 |---|---|---|
-| 1 | Debouncing | A request per keystroke. Reuse the `debounce` you wrote in `m03-utils`. |
+| 1 | Debouncing | A request per keystroke. Reuse the `debounce` you wrote in `module-3/utils`. |
 | 2 | **Race conditions** | You type `react`, then ` engineer`. The first response lands last and overwrites the newer results. This is the one that separates mid from senior. |
 | 3 | Keyboard access | Arrows don't wrap, Enter submits the form, Escape does nothing, the caret jumps because you forgot `preventDefault`. |
 | 4 | ARIA combobox | No `role`, no `aria-expanded`, no `aria-activedescendant` — or worse, moving DOM focus into the list. |
@@ -30,7 +30,7 @@ of them.
 />
 ```
 
-15 tests describe the behaviour precisely. Read them before you write anything — in a real
+14 tests describe the behaviour precisely. Read them before you write anything — in a real
 interview, the questions you ask before coding are half the score.
 
 ## Things worth knowing before you start
@@ -48,20 +48,20 @@ interview, the questions you ask before coding are half the score.
 ## Working through it
 
 ```bash
-git checkout m07-autocomplete/start
+git checkout module-7/autocomplete/start
 pnpm install
-pnpm test:watch
+pnpm test:watch        # red, 14 failing
 ```
 
 The tests are ordered from the obvious to the brutal. If you're passing everything except
 `ignores a slow response that arrives after a newer one`, you've written the version that ships
 to production and then produces a bug report nobody can reproduce.
 
-Stuck? `git checkout m07-autocomplete/guided -- src/components/`
+Stuck? `git checkout module-7/autocomplete/guided -- src/features/search/`
 
 ## Acceptance
 
-- `pnpm test` — 54 passing (39 from `m03-utils`, 15 here)
+- `pnpm test` — all green: 14 here, plus the utility tests already on the branch
 - `pnpm typecheck` — clean
 - Keyboard-only: you can search, choose and submit without touching the mouse
 - The list never shows results for a query that is no longer in the input

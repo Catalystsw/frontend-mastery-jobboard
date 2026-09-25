@@ -55,14 +55,12 @@ export function SearchAutocomplete({
   const [isOpen, setIsOpen] = useState(false)
   const [activeIndex, setActiveIndex] = useState(-1)
 
-  const rootRef = useRef<HTMLDivElement>(null)
 
   // ---------------------------------------------------------------- fetching
-  // #hint 1 Build the debounced searcher ONCE. If you create it inside the render body it is a new function every render, and a new function debounces nothing.
-  // #hint 2 Every request needs a sequence number. Capture it before you await; when the promise resolves, ignore the result if a newer request has started. This is the race condition the interviewer is actually looking for.
-  // #hint 3 Also abort the previous request with an AbortController — sequence numbers keep the UI correct, aborting stops wasted network. Interviewers want both.
-  // #hint 4 A query shorter than minQueryLength should close the list and cancel anything pending, not fire a request for "".
-  // #hint 5 Clean up on unmount: cancel the debounce and abort in flight, or you'll set state on an unmounted component.
+  // #hint 1 Build the debounced searcher ONCE and keep it in a ref. If you create it inside the render body it is a new function every render, and a new function debounces nothing.
+  // #hint 2 Every request gets a sequence number: `const seq = ++requestSeq.current`. When the promise settles, ignore it if `seq !== requestSeq.current` — a newer search has started. This is the race condition the interviewer is actually looking for.
+  // #hint 3 Also give each request its own AbortController and abort the previous one. The sequence number keeps the UI correct; the abort stops wasted network.
+  // #hint 4 On unmount, cancel the debounce and abort the request in flight.
   // #region solution
   const requestSeq = useRef(0)
   const controllerRef = useRef<AbortController>(null)
@@ -89,9 +87,11 @@ export function SearchAutocomplete({
           setIsOpen(true)
           setActiveIndex(-1)
         },
-        (error: unknown) => {
+        () => {
+          // An aborted request lands here too. Either a newer search started, and the
+          // sequence check turns it away, or the component unmounted, where setting state
+          // is a no-op.
           if (seq !== requestSeq.current) return
-          if (error instanceof DOMException && error.name === 'AbortError') return
           setStatus('error')
           setSuggestions([])
           setIsOpen(true)
@@ -113,7 +113,7 @@ export function SearchAutocomplete({
     setQuery(value)
     setActiveIndex(-1)
     onQueryChange?.(value)
-    // #hint 6 Two paths here: too short → close and cancel; long enough → open and kick off the debounced search.
+    // #hint 5 Two paths here. Shorter than minQueryLength → cancel the pending search, bump the sequence number, clear the suggestions and close. Long enough → open and call the debounced search.
     // #region solution
     if (value.trim().length < minQueryLength) {
       searchRef.current.cancel()
@@ -129,7 +129,7 @@ export function SearchAutocomplete({
   }
 
   const select = (suggestion: JobSuggestion) => {
-    // #hint 7 Selecting sets the input to the chosen title, closes the list, and calls onSelect. It must NOT fire another search — cancel the pending one.
+    // #hint 6 Selecting sets the input to the chosen title, closes the list, and calls onSelect. It must NOT fire another search — cancel the pending one.
     // #region solution
     searchRef.current.cancel()
     requestSeq.current++
@@ -145,17 +145,13 @@ export function SearchAutocomplete({
 
   // ---------------------------------------------------------------- keyboard
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    // #hint 8 ArrowDown and ArrowUp move the active option and WRAP at both ends. Call preventDefault, or the caret jumps to the start/end of the input.
-    // #hint 9 Enter selects the active option — and does nothing when nothing is active. Escape closes the list but leaves the typed text alone.
-    // #hint 10 ArrowDown on a closed list with results should reopen it. Small detail, and it's the one people notice when it's missing.
+    // #hint 7 ArrowDown and ArrowUp move the active option and WRAP at both ends: `(current + 1) % length` going down, and from 0 (or -1) jump to `length - 1` going up. Call preventDefault, or the caret jumps to the start/end of the input.
+    // #hint 8 Enter selects the active option — and does nothing when nothing is active. Escape closes the list but leaves the typed text alone. While the list is closed, the arrows and Enter do nothing.
     // #region solution
+    if (!isOpen) return // a hidden list must not move or select anything
+
     if (event.key === 'ArrowDown') {
       event.preventDefault()
-      if (!isOpen && suggestions.length > 0) {
-        setIsOpen(true)
-        setActiveIndex(0)
-        return
-      }
       if (suggestions.length === 0) return
       setActiveIndex((current) => (current + 1) % suggestions.length)
       return
@@ -183,31 +179,16 @@ export function SearchAutocomplete({
     // #endregion
   }
 
-  // ------------------------------------------------------------ outside click
-  useEffect(() => {
-    if (!isOpen) return
-    // #hint 11 Close when a click lands outside the component. Listen on document, and check `rootRef.current.contains(event.target)`. Remember to remove the listener.
-    // #region solution
-    const handlePointerDown = (event: MouseEvent) => {
-      if (rootRef.current?.contains(event.target as Node)) return
-      setIsOpen(false)
-      setActiveIndex(-1)
-    }
-    document.addEventListener('mousedown', handlePointerDown)
-    return () => document.removeEventListener('mousedown', handlePointerDown)
-    // #endregion
-  }, [isOpen])
-
   // ------------------------------------------------------------------ render
-  // #hint 12 The ARIA combobox contract: input gets role="combobox", aria-expanded, aria-controls, aria-autocomplete="list", and aria-activedescendant pointing at the ACTIVE OPTION'S id — focus itself never leaves the input.
-  // #hint 13 The list is role="listbox" with role="option" children carrying aria-selected. Use onMouseDown for option clicks, not onClick — onClick fires after blur has already closed the list.
-  // #hint 14 Announce loading and empty states in a role="status" region, otherwise a screen-reader user hears nothing happen.
+  // #hint 9 The ARIA combobox contract: input gets role="combobox", aria-expanded, aria-controls, aria-autocomplete="list", and aria-activedescendant pointing at the ACTIVE OPTION'S id — focus itself never leaves the input.
+  // #hint 10 The list is role="listbox" with role="option" children carrying aria-selected. Use onMouseDown for option clicks, not onClick — onClick fires after blur has already closed the list.
+  // #hint 11 Announce loading, empty and error states in a role="status" region, otherwise a screen-reader user hears nothing happen.
   // #region solution
   const showList = isOpen && status !== 'loading' && suggestions.length > 0
   const showEmpty = isOpen && status === 'ready' && suggestions.length === 0
 
   return (
-    <div ref={rootRef} className="search-autocomplete">
+    <div className="search-autocomplete">
       <label htmlFor={`${listboxId}-input`}>{label}</label>
       <input
         id={`${listboxId}-input`}

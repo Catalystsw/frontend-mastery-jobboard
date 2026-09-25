@@ -154,16 +154,6 @@ describe('SearchAutocomplete', () => {
     expect(input).toHaveValue('engineer')
   })
 
-  it('closes when a click lands outside the component', async () => {
-    const { user, input } = setup()
-    await user.type(input, 'engineer')
-    await screen.findAllByRole('option')
-
-    await user.click(document.body)
-
-    await waitFor(() => expect(screen.queryByRole('listbox')).not.toBeInTheDocument())
-  })
-
   it('clearing the input below the minimum closes the list', async () => {
     const { user, input } = setup()
     await user.type(input, 'engineer')
