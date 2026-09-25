@@ -60,12 +60,13 @@ handler.
   edge. For scroll position, the newest value is the only correct one.
 - The handle is cleared **before** the call, so a handler that schedules itself again from
   inside the frame works. A self-scheduling animation loop is the common case.
-- `fn.bind(this, ...args)` holds the receiver and the arguments in one value. Keeping the
-  two apart works equally well and trips `no-this-alias`.
+- An arrow wrapper and `fn(...latestArgs)`. No `this` is forwarded — a method passed in
+  bare loses its receiver, so bind it where you pass it: `rafSchedule(list.onScroll.bind(list))`.
 - `requestFrame` / `cancelFrame` are injected. Not for purity — for the tests, which drive
   frames by hand so the ordering can be asserted instead of slept on.
-- `cancel()` clears the pending call as well as the handle. Clear only the handle and a
-  cancelled payload fires on the next frame.
+- `cancel()` only needs the handle. Every call stores its arguments *before* it can ask
+  for a frame, so a cancelled payload can never ride into a later frame — the next call
+  overwrites it first.
 
 **What an interviewer pushes on**
 
@@ -79,6 +80,12 @@ at all in a background tab — which is a feature.
 
 A pending frame fires into a dead component. That is what `cancel()` is for, and why the
 function returns it rather than a bare closure.
+
+> "Make it keep `this`."
+
+Return a normal `function` instead of an arrow, and hold the call as one value:
+`pending = fn.bind(this, ...args)`. The frame then runs `pending()`. That also keeps the
+receiver and the arguments from drifting apart.
 
 ---
 

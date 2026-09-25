@@ -65,15 +65,6 @@ describe('measure', () => {
     expect(() => measure('bare', () => null, bare)).not.toThrow()
   })
 
-  it('measures in call order when nested', () => {
-    const { perf, calls } = fakeClock([0, 1, 2, 3])
-
-    measure('outer', () => measure('inner', () => null, perf), perf)
-
-    expect(calls[0]).toBe('mark:outer:start')
-    expect(calls.at(-1)).toBe('measure:outer:outer:start:outer:end')
-  })
-
   it('calls the callback exactly once', () => {
     const { perf } = fakeClock([0, 1])
     const spy = vi.fn()

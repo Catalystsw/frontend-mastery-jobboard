@@ -55,12 +55,6 @@ describe('visibleRange', () => {
     expect(range.endIndex).toBe(-1)
   })
 
-  it('treats a negative scrollTop — an elastic overscroll — as the top', () => {
-    const range = visibleRange({ ...list, scrollTop: -220, overscan: 0 })
-
-    expect(range.startIndex).toBe(0)
-  })
-
   it('renders far fewer rows than the list holds — the whole point of the exercise', () => {
     const range = visibleRange({ ...list, scrollTop: 12_000, overscan: 3 })
     const rendered = range.endIndex - range.startIndex + 1

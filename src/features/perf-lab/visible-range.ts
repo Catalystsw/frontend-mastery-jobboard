@@ -34,30 +34,26 @@ export function visibleRange({
   count,
   overscan = 3,
 }: VisibleRangeInput): VisibleRange {
-  // #hint 1 Start with the maths on paper: the first visible row is `scrollTop / rowHeight`, floored. The last is `(scrollTop + viewportHeight) / rowHeight`, ceiled.
-  // #hint 2 Then apply the overscan, and only then clamp. Clamping before the overscan lets the range walk off the ends of the list.
-  // #hint 3 `endIndex` is inclusive, so an empty list must produce `-1` — not `0`, which would render a row that does not exist.
-  // #hint 4 `offsetY` is `startIndex * rowHeight`. It is what keeps row 400 drawn where row 400 belongs instead of at the top of the container.
-  // #hint 5 Guard the degenerate inputs the browser will genuinely hand you: `count` of 0 during the first render, and a `rowHeight` of 0 before layout has run.
+  // #hint 1 Guard first: with no rows, or a row height of 0 (the first render, before layout), return the empty range `{ startIndex: 0, endIndex: -1, offsetY: 0, totalHeight: 0 }`.
+  // #hint 2 The first visible row is `Math.floor(scrollTop / rowHeight)`. The last is `Math.ceil((scrollTop + viewportHeight) / rowHeight) - 1`.
+  // #hint 3 Widen both by `overscan`, then clamp: never below 0, never above `count - 1`.
+  // #hint 4 `offsetY` is `startIndex * rowHeight` and `totalHeight` is `count * rowHeight`.
   // #region solution
   if (count <= 0 || rowHeight <= 0) {
     return { startIndex: 0, endIndex: -1, offsetY: 0, totalHeight: 0 }
   }
 
-  const totalHeight = count * rowHeight
-  const safeScrollTop = Math.max(0, scrollTop)
-
-  const firstVisible = Math.floor(safeScrollTop / rowHeight)
-  const lastVisible = Math.ceil((safeScrollTop + Math.max(0, viewportHeight)) / rowHeight) - 1
+  const firstVisible = Math.floor(scrollTop / rowHeight)
+  const lastVisible = Math.ceil((scrollTop + viewportHeight) / rowHeight) - 1
 
   const startIndex = Math.max(0, firstVisible - overscan)
-  const endIndex = Math.min(count - 1, Math.max(firstVisible, lastVisible) + overscan)
+  const endIndex = Math.min(count - 1, lastVisible + overscan)
 
   return {
     startIndex,
     endIndex,
     offsetY: startIndex * rowHeight,
-    totalHeight,
+    totalHeight: count * rowHeight,
   }
   // #endregion
 }
