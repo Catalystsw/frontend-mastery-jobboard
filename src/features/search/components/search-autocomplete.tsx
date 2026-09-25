@@ -1,14 +1,14 @@
-// #note SearchAutocomplete — the job board's search box, and the single most-asked
-// #note "build this live, no libraries" interview question.
+// SearchAutocomplete — the job board's search box, and the single most-asked
+// "build this live, no libraries" interview question.
 // #note
-// #note Five things are being tested at once, and most candidates only get three:
-// #note   1. debounce           — don't fetch on every keystroke
-// #note   2. race conditions    — an older request must never overwrite a newer one
-// #note   3. keyboard access    — arrows, Enter, Escape, and wrapping at the ends
-// #note   4. ARIA combobox      — the roles and attributes screen readers rely on
-// #note   5. state honesty      — loading, empty and error are different things
+// Five things are being tested at once, and most candidates only get three:
+// 1. debounce           — don't fetch on every keystroke
+// 2. race conditions    — an older request must never overwrite a newer one
+// 3. keyboard access    — arrows, Enter, Escape, and wrapping at the ends
+// 4. ARIA combobox      — the roles and attributes screen readers rely on
+// 5. state honesty      — loading, empty and error are different things
 // #note
-// #note You already wrote the debounce in module-3/utils. Reuse it — don't rewrite it.
+// You already wrote the debounce in module-3/utils. Reuse it — don't rewrite it.
 
 import { useEffect, useId, useRef, useState } from 'react'
 import { debounce } from '@/utils/debounce'
@@ -57,181 +57,24 @@ export function SearchAutocomplete({
 
 
   // ---------------------------------------------------------------- fetching
-  // #hint 1 Build the debounced searcher ONCE and keep it in a ref. If you create it inside the render body it is a new function every render, and a new function debounces nothing.
-  // #hint 2 Every request gets a sequence number: `const seq = ++requestSeq.current`. When the promise settles, ignore it if `seq !== requestSeq.current` — a newer search has started. This is the race condition the interviewer is actually looking for.
-  // #hint 3 Also give each request its own AbortController and abort the previous one. The sequence number keeps the UI correct; the abort stops wasted network.
-  // #hint 4 On unmount, cancel the debounce and abort the request in flight.
-  // #region solution
-  const requestSeq = useRef(0)
-  const controllerRef = useRef<AbortController>(null)
-
-  // The debounced searcher is created once and kept in a ref so its timer survives
-  // re-renders. The refs it closes over are only ever read inside the debounced
-  // callback — that is, in a timeout, never during render. The rule cannot see that,
-  // and rewriting this to satisfy it would lose the timer on every keystroke.
-  const searchRef = useRef(
-    // eslint-disable-next-line react-hooks/refs
-    debounce((term: string) => {
-      const seq = ++requestSeq.current
-      controllerRef.current?.abort()
-      const controller = new AbortController()
-      controllerRef.current = controller
-
-      setStatus('loading')
-
-      fetchSuggestions(term, controller.signal).then(
-        (results) => {
-          if (seq !== requestSeq.current) return // a newer search has already started
-          setSuggestions(results)
-          setStatus('ready')
-          setIsOpen(true)
-          setActiveIndex(-1)
-        },
-        () => {
-          // An aborted request lands here too. Either a newer search started, and the
-          // sequence check turns it away, or the component unmounted, where setting state
-          // is a no-op.
-          if (seq !== requestSeq.current) return
-          setStatus('error')
-          setSuggestions([])
-          setIsOpen(true)
-        },
-      )
-    }, debounceMs),
-  )
-
-  useEffect(() => {
-    const search = searchRef.current
-    return () => {
-      search.cancel()
-      controllerRef.current?.abort()
-    }
-  }, [])
-  // #endregion
+  throw new Error('Not implemented')
 
   const handleChange = (value: string) => {
     setQuery(value)
     setActiveIndex(-1)
     onQueryChange?.(value)
-    // #hint 5 Two paths here. Shorter than minQueryLength → cancel the pending search, bump the sequence number, clear the suggestions and close. Long enough → open and call the debounced search.
-    // #region solution
-    if (value.trim().length < minQueryLength) {
-      searchRef.current.cancel()
-      requestSeq.current++ // invalidate anything still in flight
-      setSuggestions([])
-      setStatus('idle')
-      setIsOpen(false)
-      return
-    }
-    setIsOpen(true)
-    searchRef.current(value.trim())
-    // #endregion
+    throw new Error('Not implemented')
   }
 
   const select = (suggestion: JobSuggestion) => {
-    // #hint 6 Selecting sets the input to the chosen title, closes the list, and calls onSelect. It must NOT fire another search — cancel the pending one.
-    // #region solution
-    searchRef.current.cancel()
-    requestSeq.current++
-    setQuery(suggestion.title)
-    setSuggestions([])
-    setIsOpen(false)
-    setActiveIndex(-1)
-    setStatus('idle')
-    onQueryChange?.(suggestion.title)
-    onSelect(suggestion)
-    // #endregion
+    throw new Error('Not implemented')
   }
 
   // ---------------------------------------------------------------- keyboard
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    // #hint 7 ArrowDown and ArrowUp move the active option and WRAP at both ends: `(current + 1) % length` going down, and from 0 (or -1) jump to `length - 1` going up. Call preventDefault, or the caret jumps to the start/end of the input.
-    // #hint 8 Enter selects the active option — and does nothing when nothing is active. Escape closes the list but leaves the typed text alone. While the list is closed, the arrows and Enter do nothing.
-    // #region solution
-    if (!isOpen) return // a hidden list must not move or select anything
-
-    if (event.key === 'ArrowDown') {
-      event.preventDefault()
-      if (suggestions.length === 0) return
-      setActiveIndex((current) => (current + 1) % suggestions.length)
-      return
-    }
-
-    if (event.key === 'ArrowUp') {
-      event.preventDefault()
-      if (suggestions.length === 0) return
-      setActiveIndex((current) => (current <= 0 ? suggestions.length - 1 : current - 1))
-      return
-    }
-
-    if (event.key === 'Enter') {
-      const active = suggestions[activeIndex]
-      if (!active) return
-      event.preventDefault()
-      select(active)
-      return
-    }
-
-    if (event.key === 'Escape') {
-      setIsOpen(false)
-      setActiveIndex(-1)
-    }
-    // #endregion
+    throw new Error('Not implemented')
   }
 
   // ------------------------------------------------------------------ render
-  // #hint 9 The ARIA combobox contract: input gets role="combobox", aria-expanded, aria-controls, aria-autocomplete="list", and aria-activedescendant pointing at the ACTIVE OPTION'S id — focus itself never leaves the input.
-  // #hint 10 The list is role="listbox" with role="option" children carrying aria-selected. Use onMouseDown for option clicks, not onClick — onClick fires after blur has already closed the list.
-  // #hint 11 Announce loading, empty and error states in a role="status" region, otherwise a screen-reader user hears nothing happen.
-  // #region solution
-  const showList = isOpen && status !== 'loading' && suggestions.length > 0
-  const showEmpty = isOpen && status === 'ready' && suggestions.length === 0
-
-  return (
-    <div className="search-autocomplete">
-      <label htmlFor={`${listboxId}-input`}>{label}</label>
-      <input
-        id={`${listboxId}-input`}
-        type="text"
-        role="combobox"
-        placeholder={placeholder}
-        autoComplete="off"
-        aria-expanded={showList}
-        aria-controls={`${listboxId}-listbox`}
-        aria-autocomplete="list"
-        aria-activedescendant={activeIndex >= 0 ? optionId(activeIndex) : undefined}
-        value={query}
-        onChange={(event) => handleChange(event.target.value)}
-        onKeyDown={handleKeyDown}
-      />
-
-      <div role="status" aria-live="polite">
-        {status === 'loading' && 'Searching…'}
-        {showEmpty && 'No matching jobs'}
-        {status === 'error' && 'Something went wrong. Try again.'}
-      </div>
-
-      {showList && (
-        <ul id={`${listboxId}-listbox`} role="listbox" aria-label={label}>
-          {suggestions.map((suggestion, index) => (
-            <li
-              key={suggestion.id}
-              id={optionId(index)}
-              role="option"
-              aria-selected={index === activeIndex}
-              onMouseDown={(event) => {
-                event.preventDefault() // keep focus in the input
-                select(suggestion)
-              }}
-              onMouseEnter={() => setActiveIndex(index)}
-            >
-              <span>{suggestion.title}</span>
-              <span> · {suggestion.employerName}</span>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  )
-  // #endregion
+  throw new Error('Not implemented')
 }
