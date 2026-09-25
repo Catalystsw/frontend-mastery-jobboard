@@ -28,7 +28,7 @@ Then pick up your first exercise:
 
 ```bash
 git checkout module-3/utils/start
-pnpm test:watch     # red — 39 failing. That is the starting line.
+pnpm test:watch     # red. That is the starting line — STAGE.md has the count.
 ```
 
 ---
