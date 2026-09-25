@@ -20,7 +20,7 @@ git --version
 |---|---|---|
 | `src/diagnostic/score.ts` | `scoreDiagnostic(marks)` | Turns your own twelve diagnostic marks from lesson 5 into the module you should open first |
 
-Nine tests, one pure function, no framework and no DOM. If it feels too easy, it is — the
+Eight tests, one pure function, no framework and no DOM. If it feels too easy, it is — the
 difficulty here is entirely in the workflow, not the code.
 
 ## Working through it
@@ -28,7 +28,7 @@ difficulty here is entirely in the workflow, not the code.
 ```bash
 git checkout module-1/setup/start
 pnpm install
-pnpm test:watch        # red, 9 failing
+pnpm test:watch        # red, 8 failing
 ```
 
 Read `src/diagnostic/score.test.ts` before you read `score.ts`. The test is the specification,
@@ -48,10 +48,9 @@ git diff module-1/setup/solution -- src/diagnostic/
 
 ## Acceptance
 
-- `pnpm test` — 9 passing
+- `pnpm test` — 8 passing
 - `pnpm typecheck` — clean, with `strict` on
 - No `any`, no `@ts-expect-error`
-- A caller who mutates the returned `focusModules` cannot affect the next caller
 
 ## Then run it on yourself
 

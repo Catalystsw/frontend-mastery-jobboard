@@ -30,11 +30,10 @@ export const TOTAL_QUESTIONS = 12
  * @throws RangeError if the run is not exactly {@link TOTAL_QUESTIONS} long.
  */
 export function scoreDiagnostic(marks: boolean[]): DiagnosticResult {
-  // #hint 1 Validate first. A run that is not exactly TOTAL_QUESTIONS long is a bug in the caller, not a low score — throw a RangeError and say both numbers in the message.
-  // #hint 2 The score is just how many entries are true. `filter` then `length` is fine; so is a reduce. Do not try to be clever.
-  // #hint 3 There are four bands: 0–3, 4–6, 7–9, 10–12. Write them as ordered upper bounds and return on the first one the score fits, rather than as a chain of && comparisons.
-  // #hint 4 Each band carries its own startModule and focusModules. Keep that data in one table next to the bands, not spread through four if-branches — you will thank yourself when the bands move.
-  // #hint 5 Return a fresh array for focusModules on every call. Handing out a reference to a shared constant lets a caller mutate the next caller's result.
+  // #hint 1 Validate first. A run that is not exactly TOTAL_QUESTIONS long is a bug in the caller, not a low score — throw a RangeError and put both numbers in the message.
+  // #hint 2 The score is how many entries are `true`. `marks.filter(Boolean).length` is enough.
+  // #hint 3 Four bands: 0–3, 4–6, 7–9, 10–12. Check them in order — `if (score <= 3) return …`, then `<= 6`, then `<= 9` — and whatever is left is the top band.
+  // #hint 4 Each band returns its own startModule and focusModules. The table in the tests tells you the exact numbers.
   // #region solution
   if (marks.length !== TOTAL_QUESTIONS) {
     throw new RangeError(
@@ -44,30 +43,16 @@ export function scoreDiagnostic(marks: boolean[]): DiagnosticResult {
 
   const score = marks.filter(Boolean).length
 
-  // Ordered by upper bound, so the first band the score fits under is the answer.
-  const bands: ReadonlyArray<{
-    upTo: number
-    band: DiagnosticBand
-    startModule: number
-    focusModules: readonly number[]
-  }> = [
-    // Shipping features, not studying the platform. Act I is the whole program for now.
-    { upTo: 3, band: 'starting-fresh', startModule: 2, focusModules: [2, 3, 4] },
-    // Knows React, does not yet know the browser underneath it. The most common result.
-    { upTo: 6, band: 'common', startModule: 2, focusModules: [2, 3] },
-    // Could survive a mid-level loop. The gap is the data layer and saying it out loud.
-    { upTo: 9, band: 'mid-shaped', startModule: 8, focusModules: [8, 11, 14] },
-    // Act I at 1.5x — but still do the exercises. The gap is the interview, not the knowledge.
-    { upTo: TOTAL_QUESTIONS, band: 'senior-shaped', startModule: 8, focusModules: [8, 11, 13] },
-  ]
+  // Shipping features, not studying the platform. Act I is the whole program for now.
+  if (score <= 3) return { score, band: 'starting-fresh', startModule: 2, focusModules: [2, 3, 4] }
 
-  const match = bands.find((candidate) => score <= candidate.upTo)!
+  // Knows React, does not yet know the browser underneath it. The most common result.
+  if (score <= 6) return { score, band: 'common', startModule: 2, focusModules: [2, 3] }
 
-  return {
-    score,
-    band: match.band,
-    startModule: match.startModule,
-    focusModules: [...match.focusModules],
-  }
+  // Could survive a mid-level loop. The gap is the data layer and saying it out loud.
+  if (score <= 9) return { score, band: 'mid-shaped', startModule: 8, focusModules: [8, 11, 14] }
+
+  // Act I at 1.5x — but still do the exercises. The gap is the interview, not the knowledge.
+  return { score, band: 'senior-shaped', startModule: 8, focusModules: [8, 11, 13] }
   // #endregion
 }
