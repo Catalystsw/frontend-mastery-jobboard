@@ -37,7 +37,7 @@ describe('throttle', () => {
 
   it('allows one call per window over time', () => {
     const spy = vi.fn()
-    const throttled = throttle(spy, 100, { trailing: false })
+    const throttled = throttle(spy, 100)
 
     throttled()
     vi.advanceTimersByTime(100)
@@ -46,28 +46,6 @@ describe('throttle', () => {
     throttled()
 
     expect(spy).toHaveBeenCalledTimes(3)
-  })
-
-  it('with leading: false, skips the first call and waits for the trailing one', () => {
-    const spy = vi.fn()
-    const throttled = throttle(spy, 100, { leading: false })
-
-    throttled()
-    expect(spy).not.toHaveBeenCalled()
-
-    vi.advanceTimersByTime(100)
-    expect(spy).toHaveBeenCalledTimes(1)
-  })
-
-  it('with trailing: false, never fires after the window closes', () => {
-    const spy = vi.fn()
-    const throttled = throttle(spy, 100, { trailing: false })
-
-    throttled()
-    throttled()
-    vi.advanceTimersByTime(500)
-
-    expect(spy).toHaveBeenCalledTimes(1)
   })
 
   it('cancel() drops a pending trailing call', () => {

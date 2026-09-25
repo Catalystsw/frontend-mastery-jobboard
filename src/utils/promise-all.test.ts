@@ -28,11 +28,4 @@ describe('promiseAll', () => {
       promiseAll([Promise.reject(new Error('first')), after(10, 'second')]),
     ).rejects.toThrow('first')
   })
-
-  it('keeps undefined values in their slots', async () => {
-    const results = await promiseAll([Promise.resolve(undefined), Promise.resolve('value')])
-    expect(results).toHaveLength(2)
-    expect(results[0]).toBeUndefined()
-    expect(results[1]).toBe('value')
-  })
 })

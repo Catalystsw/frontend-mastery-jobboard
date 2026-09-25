@@ -1,6 +1,6 @@
 // #note EventEmitter — subscribe, unsubscribe, emit. The pattern under every toast system,
 // #note websocket client and pub/sub layer you'll write. Module 7's toasts use this one.
-// #note The listener store is given to you; the four methods are yours.
+// #note The listener store and `listenerCount` are given to you; the four methods are yours.
 
 export type Listener<Payload> = (payload: Payload) => void
 
@@ -53,10 +53,8 @@ export class EventEmitter<Events extends Record<string, unknown>> {
     // #endregion
   }
 
+  /** Given — the tests use it to check that `on`, `off` and `once` keep the store tidy. */
   listenerCount(event: keyof Events): number {
-    // #placeholder return 0
-    // #region solution
     return this.#listeners.get(event)?.size ?? 0
-    // #endregion
   }
 }

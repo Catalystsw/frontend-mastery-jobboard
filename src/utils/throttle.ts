@@ -1,80 +1,52 @@
 // #note throttle — runs at most once per `wait` ms, no matter how often it's called.
 // #note Debounce waits for quiet; throttle guarantees a steady rate. On the job board this is
 // #note the infinite-scroll handler: fire while the user keeps scrolling, but bounded.
+// #note
+// #note This version always keeps both edges: the first call runs at once (leading), and the
+// #note last call made during a window runs when the window closes (trailing).
 
-export interface Throttled<T extends (...args: never[]) => void> {
-  (...args: Parameters<T>): void
+export interface Throttled<Args extends unknown[]> {
+  (...args: Args): void
+  /** Drop a pending trailing call. */
   cancel(): void
 }
 
-export interface ThrottleOptions {
-  /** Run on the first call of a window. Default: true. */
-  leading?: boolean
-  /** Run once more at the end of a window if calls came in during it. Default: true. */
-  trailing?: boolean
-}
-
-export function throttle<T extends (...args: never[]) => void>(
-  fn: T,
+export function throttle<Args extends unknown[]>(
+  fn: (...args: Args) => void,
   wait: number,
-  options: ThrottleOptions = {},
-): Throttled<T> {
-  // #hint 1 Decide the edges before you write anything: leading fires immediately, trailing fires once at the end of the window. Most bugs here are really unstated assumptions.
-  // #hint 2 Track the timestamp of the last invocation. A call is allowed when `now - last >= wait`.
-  // #hint 3 If a call arrives mid-window and `trailing` is on, store its arguments and schedule one run for when the window closes — don't schedule one per call.
-  // #hint 4 With `leading: false`, the first call must not run immediately — that's the case that breaks most implementations.
+): Throttled<Args> {
+  // #hint 1 Think of a window that opens on a call and closes `wait` ms later. A timer can be that window: while it is set, the window is open.
+  // #hint 2 No window open → run `fn` right away and open one. That is the leading edge.
+  // #hint 3 Window already open → don't run, just remember the arguments. Keep only the latest ones — each call overwrites the last.
+  // #hint 4 When the window closes, if arguments were remembered, run them. Running them through `throttled` again opens a fresh window, which is exactly what you want.
+  // #hint 5 `cancel` clears the timer and forgets the remembered arguments.
   // #region solution
-  const leading = options.leading ?? true
-  const trailing = options.trailing ?? true
+  let timer: ReturnType<typeof setTimeout> | undefined
+  let pendingArgs: Args | undefined
 
-  let lastInvokedAt = 0
-  let timeout: ReturnType<typeof setTimeout> | undefined
-  let pendingArgs: Parameters<T> | undefined
-  let pendingThis: unknown
-
-  const invoke = (context: unknown, args: Parameters<T>) => {
-    lastInvokedAt = Date.now()
-    fn.apply(context, args)
-  }
-
-  const throttled = function (this: unknown, ...args: Parameters<T>) {
-    const now = Date.now()
-
-    if (lastInvokedAt === 0 && !leading) lastInvokedAt = now
-
-    const remaining = wait - (now - lastInvokedAt)
-
-    if (remaining <= 0) {
-      if (timeout !== undefined) {
-        clearTimeout(timeout)
-        timeout = undefined
-      }
-      invoke(this, args)
+  const throttled = ((...args: Args) => {
+    if (timer !== undefined) {
+      pendingArgs = args
       return
     }
 
-    if (!trailing) return
+    fn(...args)
+    timer = setTimeout(closeWindow, wait)
+  }) as Throttled<Args>
 
-    pendingArgs = args
-    pendingThis = this
+  const closeWindow = () => {
+    timer = undefined
+    if (pendingArgs === undefined) return
 
-    timeout ??= setTimeout(() => {
-      timeout = undefined
-      if (!pendingArgs) return
-      const queuedArgs = pendingArgs
-      const queuedThis = pendingThis
-      pendingArgs = undefined
-      pendingThis = undefined
-      invoke(queuedThis, queuedArgs)
-    }, remaining)
-  } as Throttled<T>
+    const args = pendingArgs
+    pendingArgs = undefined
+    throttled(...args)
+  }
 
   throttled.cancel = () => {
-    if (timeout !== undefined) clearTimeout(timeout)
-    timeout = undefined
+    clearTimeout(timer)
+    timer = undefined
     pendingArgs = undefined
-    pendingThis = undefined
-    lastInvokedAt = 0
   }
 
   return throttled

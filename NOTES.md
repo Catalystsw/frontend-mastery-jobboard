@@ -18,22 +18,32 @@ you should be able to say why you picked your number.
 
 **Decisions in this implementation**
 
-- **Trailing edge by default.** For a search box, the last thing typed is the only query
-  worth sending.
-- `cancel()` **and** `flush()`. `cancel` is for unmount; `flush` is for "the user pressed
-  Enter, send it now". Most submitted answers ship neither, and the follow-up question is
-  always about one of them.
-- A normal `function`, not an arrow, with `fn.apply(this, args)`. An arrow has no `this`
-  of its own, so `debounce(obj.method)` would silently lose its receiver — module 3,
-  lesson 3, cashed in.
+- **Trailing edge only.** For a search box, the last thing typed is the only query worth
+  sending.
 - The timer id lives in the closure, not on the returned function. That is what lets one
   call cancel the previous one, and it is the whole mechanism.
+- The newest arguments win without any bookkeeping: each call hands `setTimeout` a new
+  arrow that closes over that call's `args`, and clearing the old timer throws the old
+  arrow away.
+- `cancel()` for unmount. Most submitted answers ship without it, and the first follow-up
+  is always "what happens when the component goes away?"
 
 **What an interviewer pushes on**
 
 > "What happens on unmount?"
 
 A pending timer fires into a dead component. Return `cancel` and call it in cleanup.
+
+> "Add `flush()`."
+
+"The user pressed Enter — send it now." Keep the pending arguments in a variable instead of
+only inside the timer's arrow, so `flush` can clear the timer and run them straight away.
+
+> "What happens to `this`?"
+
+This version uses arrows, so `debounce(obj.method)` loses its receiver. The fix is a normal
+`function` for the returned wrapper and `fn.apply(this, args)` — module 3, lesson 3, cashed
+in.
 
 > "Does this fix the race condition?"
 
@@ -46,22 +56,31 @@ That needs an `AbortController` or a request id, which is module 7's autocomplet
 ## `throttle`
 
 **The trade-off: which edges you keep.** Leading-only feels instant and drops the final
-state. Trailing-only is accurate and feels laggy. Both is usually right and costs you an
-extra timer plus the stored arguments.
+state. Trailing-only is accurate and feels laggy. Both is usually right and costs you the
+stored arguments.
 
 Say which pair you chose and what the user would feel if you chose the other.
 
 **Decisions in this implementation**
 
-- Both edges on by default, each switchable. `leading: false` is the case that breaks most
-  implementations — the first call must *not* run immediately, and the naive
-  `lastInvokedAt = 0` start makes it run.
-- Timestamps, not a boolean gate. A boolean cannot tell you how much of the window is
-  left, so it cannot schedule an accurate trailing call.
-- One trailing timer, not one per call. Scheduling per call is the bug the function exists
-  to prevent.
+- Both edges, always. The first call runs at once; the last call made during a window runs
+  when the window closes, so the final scroll position is never lost.
+- The timer **is** the window. While it is set, calls only store their arguments. No
+  timestamps, no arithmetic — which is why this version is short enough to write in an
+  interview without an off-by-one.
+- The trailing call goes back through `throttled` itself, so it opens the next window the
+  same way any leading call does. One code path, not two.
+- One timer per window, not one per call. Scheduling per call is the bug the function
+  exists to prevent.
 
 **What an interviewer pushes on**
+
+> "Make the edges configurable — `{ leading, trailing }`."
+
+`trailing: false` is easy: stop storing arguments. `leading: false` is the one that breaks
+implementations — the first call must *not* run immediately, it has to open a window and
+wait. Lodash does it with timestamps (`Date.now() - lastInvokedAt`), which is the version
+to reach for once options arrive.
 
 > "Debounce or throttle here?"
 
@@ -87,16 +106,24 @@ that turn up in application data and stops there, on purpose.
 - The `WeakMap` is set **before** recursing. Set it after and a circular reference
   recurses forever. This is the single most-marked line in the function.
 - `WeakMap`, not `Map`, so the bookkeeping cannot outlive the objects it describes.
-- `Date`, `Map` and `Set` are handled explicitly. Spread them and you get `{}` — silently,
-  with no error, which is how this bug reaches production.
-- `Reflect.ownKeys` rather than `Object.keys`, so symbols and non-enumerable properties
-  survive.
+- `Date` is handled explicitly. Spread it and you get `{}` — silently, with no error, which
+  is how this bug reaches production.
+- Arrays are checked before plain objects, so an array comes back as an array and not as
+  an object with numeric keys.
+- `Object.entries` copies the own enumerable string keys. Symbols, non-enumerable
+  properties and the prototype are left behind — deliberately, since filter state and API
+  data never carry them.
 - Functions are returned by reference, not cloned. Cloning a function is not meaningful
   in JavaScript, and pretending otherwise is worse than the sharing.
 - **Recursive**, which means a deep enough tree overflows the stack. The queue-based
   version is the follow-up answer, not the first draft.
 
 **What an interviewer pushes on**
+
+> "Now add `Map` and `Set`."
+
+Two more branches, shaped exactly like the array one: create the empty `Map`/`Set`, record
+it in `seen`, then copy each entry through `deepClone`. For a `Map`, clone the keys too.
 
 > "Why not `JSON.parse(JSON.stringify(x))`?"
 
@@ -127,6 +154,10 @@ way to call functions.
   arguably wrong if you want duplicates, and right for every real use of this class.
 - The event's entry is **deleted** when its last listener leaves. Otherwise the map grows
   with empty sets forever, which is module 3, lesson 8, in miniature.
+- `emit` walks a **copy** of the set. A listener that unsubscribes — or subscribes another
+  listener — during emit would otherwise be changing the collection being iterated.
+- `listenerCount` is given. It exists so the tests can see whether `on`/`off`/`once` keep
+  the store tidy, not as part of the exercise.
 - Typed by an `Events` record, so `emit('job:selected', payload)` is checked against the
   payload the event declares. An untyped emitter is a stringly-typed API.
 - `#listeners` is genuinely private. No convention, no underscore, no way to reach it from
@@ -158,10 +189,15 @@ depends on whether the page is meaningful with a hole in it.
 
 - Results go into a **pre-sized array by index**. Pushing as they resolve returns
   completion order, which is the wrong answer and the reason the question is asked.
-- A `settled` counter rather than `results.length`. A slot holding `undefined` is
-  indistinguishable from an empty one, so length lies.
-- The empty array resolves immediately, handled **before** the loop. This is the case that
-  fails half of all submitted answers.
+- A `finished` counter rather than `results.length`. The array is pre-sized, so its length
+  is already full on the first line — and a slot holding `undefined` looks exactly like an
+  empty one, so counting filled slots lies too.
+- The empty array resolves immediately, handled **before** the loop. With nothing to
+  finish, no `.then` ever runs, so nothing ever calls `resolve` and the promise hangs
+  forever.
+- A plain `T[]` signature. The real `Promise.all` keeps a separate type per slot (a tuple);
+  that typing is a TypeScript exercise, not a promises one, and module 4 is where it
+  belongs.
 - `Promise.resolve(value)` normalises non-promise inputs in one line — the real
   `Promise.all` accepts any iterable of values.
 - `reject` is passed straight through as the rejection handler. A promise settles once, so

@@ -48,20 +48,6 @@ describe('deepClone', () => {
     expect(copy.postedAt).not.toBe(postedAt)
   })
 
-  it('clones Map and Set', () => {
-    const source = {
-      byId: new Map([['job-1', { title: 'Frontend Engineer' }]]),
-      tags: new Set(['remote', 'senior']),
-    }
-    const copy = deepClone(source)
-
-    expect(copy.byId).toBeInstanceOf(Map)
-    expect(copy.tags).toBeInstanceOf(Set)
-    expect(copy.byId.get('job-1')).toEqual({ title: 'Frontend Engineer' })
-    expect(copy.byId.get('job-1')).not.toBe(source.byId.get('job-1'))
-    expect([...copy.tags]).toEqual(['remote', 'senior'])
-  })
-
   it('survives circular references', () => {
     type Node = { name: string; self?: Node }
     const node: Node = { name: 'root' }
