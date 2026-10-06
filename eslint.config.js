@@ -111,6 +111,18 @@ export default tseslint.config(
     ]),
   },
 
+  // typescript-exercises — module 4 practice, not app code. `any` and `@ts-expect-error`
+  // are the subject under test here, not sloppiness, and a type alias declared only so a
+  // student can hover it in the editor is the point, not dead code.
+  {
+    files: ['src/typescript-exercises/**/*.ts'],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/ban-ts-comment': 'off',
+      '@typescript-eslint/no-unused-vars': 'off',
+    },
+  },
+
   // Tests describe behaviour, so they are allowed to reach wherever they need to.
   {
     files: ['**/*.test.{ts,tsx}', 'src/test/**'],
