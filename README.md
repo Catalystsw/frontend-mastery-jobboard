@@ -90,7 +90,7 @@ Three branches per stage, plus `main`.
 
 ## Branch naming
 
-Branches follow the [course-wide convention](https://github.com/eng-AhmedMahmoud/frontend-mastery-program#git-conventions) —
+Branches follow the [course-wide convention](https://github.com/Catalystsw/frontend-mastery-program#git-conventions) —
 one branch per video, namespaced by module:
 
 ```
