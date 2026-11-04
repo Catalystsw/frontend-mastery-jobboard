@@ -71,7 +71,7 @@ step is where most of the learning actually happens — not in getting to green.
 | Branch base | Module | What you build | Status |
 |---|:--:|---|:--:|
 | `module-2/browser-lab` | 2 | Instrument a slow page: reflow vs repaint, compositor-only animation, flame charts | |
-| `module-3/utils` | 3 | The utility library: `debounce`, `throttle`, `deepClone`, `EventEmitter`, `promiseAll` | ✅ |
+| `module-3/utils` | 3 | The utility library: `debounce`, `throttle`, `deepClone`, `EventEmitter` | ✅ |
 | `module-4/domain-types` | 4 | Typed domain model, discriminated states, schema validation, typed API client | |
 | `module-5/feed-ui` | 5 | The listings feed in React — composition, keys, effects, a profiler pass | |
 | `module-6/typed-components` | 6 | Typed primitives: polymorphic `Button`, generic `Select`, typed fields | |
