@@ -121,8 +121,8 @@ the module number. A silent disable is a bug; a disable that teaches is the poin
 
 ## Known gap
 
-`README.md` and the curriculum list six utilities in the module 3 library — `debounce`,
-`throttle`, `deepClone`, `curry`, `EventEmitter`, `promiseAll` — but `curry` has no
+`README.md` and the curriculum list five utilities in the module 3 library — `debounce`,
+`throttle`, `deepClone`, `curry`, `EventEmitter` — but `curry` has no
 implementation and no tests yet. The stage is otherwise complete at 39 tests. Either add
 `src/utils/curry.ts` with its tests and republish the stage, or drop `curry` from the
 curriculum copy. Do not leave the two disagreeing.
