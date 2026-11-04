@@ -4,7 +4,7 @@ You are reading this on the `solution` branch. It is the conversation that comes
 green tests: why each utility is shaped the way it is, what it costs, and where an
 interviewer pushes.
 
-These five are the most-asked functions in frontend interviews. Passing the tests is the
+These four are the most-asked functions in frontend interviews. Passing the tests is the
 easy half. Being able to defend a line while you type it is the half that gets scored.
 
 ---
@@ -179,50 +179,10 @@ leak, and the returned unsubscribe is the fix.
 
 ---
 
-## `promiseAll`
-
-**The trade-off: what failure should mean.** `all` fails the whole screen on one bad
-endpoint. `allSettled` renders what it can. Neither is more correct — the right one
-depends on whether the page is meaningful with a hole in it.
-
-**Decisions in this implementation**
-
-- Results go into a **pre-sized array by index**. Pushing as they resolve returns
-  completion order, which is the wrong answer and the reason the question is asked.
-- A `finished` counter rather than `results.length`. The array is pre-sized, so its length
-  is already full on the first line — and a slot holding `undefined` looks exactly like an
-  empty one, so counting filled slots lies too.
-- The empty array resolves immediately, handled **before** the loop. With nothing to
-  finish, no `.then` ever runs, so nothing ever calls `resolve` and the promise hangs
-  forever.
-- A plain `T[]` signature. The real `Promise.all` keeps a separate type per slot (a tuple);
-  that typing is a TypeScript exercise, not a promises one, and module 4 is where it
-  belongs.
-- `Promise.resolve(value)` normalises non-promise inputs in one line — the real
-  `Promise.all` accepts any iterable of values.
-- `reject` is passed straight through as the rejection handler. A promise settles once, so
-  no guard flag is needed; adding one signals you do not trust the primitive.
-
-**What an interviewer pushes on**
-
-> "Does the first rejection cancel the others?"
-
-**No.** They keep running and their results are discarded. Cancellation is
-`AbortController`, and it is a separate decision from combination.
-
-> "Now write `allSettled`."
-
-Same skeleton, one changed settle condition: never reject, and store
-`{ status, value | reason }` per slot. If you built `promiseAll` with a counter, this is a
-three-line edit — which is the point of building it with a counter.
-
----
-
 ## The thing this stage is really teaching
 
-None of these five needed anything you had not already seen by lesson 8. `debounce` is a
-closure with a timer. `EventEmitter` is a `Map` and an unsubscribe. `promiseAll` is a
-counter and an index.
+None of these four needed anything you had not already seen by lesson 8. `debounce` is a
+closure with a timer. `EventEmitter` is a `Map` and an unsubscribe.
 
 You can write them from an empty file because you spent eight lessons on the mechanics
 instead of memorising the snippets — and that is exactly the difference the interview is
