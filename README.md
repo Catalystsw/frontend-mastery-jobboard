@@ -72,7 +72,7 @@ step is where most of the learning actually happens — not in getting to green.
 |---|:--:|---|:--:|
 | `module-1/setup` | 1 | The workspace, the three-branch workflow, and the scorer that turns your diagnostic marks into the module to open first | ✅ |
 | `module-2/browser-lab` | 2 | Instrument a slow page: windowing, frame-aligned handlers, read/write batching, and a measurement you can show | ✅ |
-| `module-3/utils` | 3 | The utility library: `debounce`, `throttle`, `deepClone`, `EventEmitter`, `promiseAll` | ✅ |
+| `module-3/utils` | 3 | The utility library: `debounce`, `throttle`, `deepClone`, `EventEmitter` | ✅ |
 | `module-4/domain-types` | 4 | Typed domain model, discriminated states, schema validation, typed API client | |
 | `module-5/feed-ui` | 5 | The listings feed in React — composition, keys, effects, a profiler pass | |
 | `module-6/typed-components` | 6 | Typed primitives: polymorphic `Button`, generic `Select`, typed fields | |
