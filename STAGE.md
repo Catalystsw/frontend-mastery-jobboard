@@ -1,6 +1,6 @@
-# Stage module-7/autocomplete — the search box
+# Stage module-5/autocomplete — the search box
 
-**Module 7 · UI Engineering: Components & Accessibility**
+**Module 5 · React, Deeply — lesson 5, Build the search autocomplete**
 
 Build the job board's search autocomplete from scratch. No combobox library, no headless UI.
 
@@ -48,7 +48,7 @@ interview, the questions you ask before coding are half the score.
 ## Working through it
 
 ```bash
-git checkout module-7/autocomplete/start
+git checkout module-5/autocomplete/start
 pnpm install
 pnpm test:watch        # red, 14 failing
 ```
@@ -57,7 +57,7 @@ The tests are ordered from the obvious to the brutal. If you're passing everythi
 `ignores a slow response that arrives after a newer one`, you've written the version that ships
 to production and then produces a bug report nobody can reproduce.
 
-Stuck? `git checkout module-7/autocomplete/guided -- src/features/search/`
+Stuck? `git checkout module-5/autocomplete/guided -- src/features/search/`
 
 ## Acceptance
 
@@ -68,6 +68,6 @@ Stuck? `git checkout module-7/autocomplete/guided -- src/features/search/`
 
 ## Where it goes
 
-This is the search box at the top of the job board. Module 8 replaces the hand-rolled
+This is the search box at the top of the job board. Module 6 replaces the hand-rolled
 fetching with TanStack Query and the term moves into the URL — at which point you'll see exactly
 which parts of this component were state management and which were UI.
