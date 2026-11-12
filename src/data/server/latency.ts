@@ -1,7 +1,7 @@
 /**
  * The fake network. Latency varies, requests can be cancelled, and because the delay
  * is random two requests can land out of order — which is exactly the bug the search
- * box has to survive in module 7.
+ * box has to survive in module 5.
  */
 export const latency = () => 180 + Math.random() * 420
 
