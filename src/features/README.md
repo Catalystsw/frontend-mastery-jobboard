@@ -20,9 +20,9 @@ Present today:
 
 | Feature | Owns | Course module |
 |---|---|:--:|
-| `jobs` | the listings feed, filters, the detail panel | 5 · 8 |
-| `search` | the autocomplete | 7 |
-| `applications` | applying, and the optimistic update | 8 |
+| `jobs` | the listings feed, filters, the detail panel | 5 · 6 |
+| `search` | the autocomplete | 5 |
+| `applications` | applying, and the optimistic update | 6 |
 
 Arriving later: `perf-lab` (module 2 — a deliberately slow page to instrument) and
-`employers` (module 9 — the company dashboard, behind auth).
+`employers` (module 7 — the company dashboard, behind auth).
