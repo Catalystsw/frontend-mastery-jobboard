@@ -20,10 +20,10 @@ solution branch for the follow-ups an interviewer adds once it works.
 
 These aren't exercises in a vacuum — the job board uses all of them:
 
-- `debounce` → the search box in module 7's autocomplete
+- `debounce` → the search box in module 5's autocomplete
 - `throttle` → the infinite-scroll handler on the listings feed
 - `deepClone` → resetting filters to their last saved state
-- `EventEmitter` → the toast system in module 7
+- `EventEmitter` → the toast system in module 5
 
 ## Working through it
 
