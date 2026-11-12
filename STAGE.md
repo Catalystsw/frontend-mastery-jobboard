@@ -3,7 +3,7 @@
 **Module 1 · Foundations — What Companies Actually Test · Lesson 7**
 
 The smallest possible exercise, on purpose. Its job is not to teach you JavaScript — it is to
-prove your toolchain works and to walk you through the loop you will use for the next thirteen
+prove your toolchain works and to walk you through the loop you will use for the next ten
 modules, before that loop is carrying anything heavy.
 
 ## Before you start
@@ -63,4 +63,4 @@ scoreDiagnostic([true, false, true, true, false, false, true, false, false, true
 ```
 
 Write the score, the date, and `startModule` on the first page of your notebook. You take the
-same twelve questions again in module 13, and the delta is the proof.
+same twelve questions again in module 11, and the delta is the proof.
