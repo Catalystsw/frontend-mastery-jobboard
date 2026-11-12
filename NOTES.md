@@ -27,7 +27,7 @@ line of CSS.
 - `rowHeight: 0` and `count: 0` both return an empty range instead of throwing. Both are
   real states — the first render, before layout has run, hands you exactly that.
 - Fixed row height only. Variable heights need a measured offset cache and a binary search
-  over it, which is `src/ui/virtual-list` in module 7, not here.
+  over it. No lesson in the program builds that, so it stays out of scope here.
 
 **What an interviewer pushes on**
 

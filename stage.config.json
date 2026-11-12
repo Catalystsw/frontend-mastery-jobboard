@@ -6,5 +6,5 @@
   "strip": [
     "src/features/perf-lab"
   ],
-  "note": "Earliest stage in the program after module 1. It owns src/features/perf-lab and nothing else, so the utils the student writes in module 3 and the search feature they build in module 7 are untouched by it."
+  "note": "Earliest stage in the program after module 1. It owns src/features/perf-lab and nothing else, so the utils the student writes in module 3 and the search feature they build in module 5 are untouched by it."
 }
