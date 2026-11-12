@@ -2,7 +2,7 @@
 
 The exercise repository for [Catalyst](https://catalystai.llc)'s **Frontend Mastery** program.
 
-One product, built across the whole program. Every module ships a slice of it; module 10
+One product, built across the whole program. Every module ships a slice of it; module 9
 assembles the slices into a deployed application you can defend in an interview. Nothing
 here is a throwaway demo — the `debounce` you write in module 3 is still running inside the
 autocomplete in module 5, and both are still in the app you deploy at the end.
@@ -80,7 +80,7 @@ step is where most of the learning actually happens — not in getting to green.
 | `module-6/data-layer` | 6 | TanStack Query + Router: caching, optimistic apply, filters as URL state | |
 | `module-7/next-rendering` | 7 | Next.js port: public SEO pages vs authenticated dashboard, server actions | |
 | `module-8/perf-and-tests` | 8 | Baseline → budget → fix, with Vitest + Playwright + MSW in CI | |
-| `module-10/capstone` | 10 | Assemble everything, wire auth, deploy, write the architecture story | |
+| `module-9/capstone` | 9 | Assemble everything, wire auth, deploy, write the architecture story | |
 
 Three branches per stage, plus `main`.
 
@@ -236,7 +236,7 @@ reach past a front door, or a utility that grew a dependency all fail the build.
 1. Never hand-edit `guided` or `start`. Regenerate them.
 2. Keep stage path ownership disjoint — see the table in `ARCHITECTURE.md`. Two stages that
    strip overlapping paths blank out work the student already finished.
-3. Solutions never merge into `main` except through `module-10/capstone` — `main` is the
+3. Solutions never merge into `main` except through `module-9/capstone` — `main` is the
    assembled product, not a pile of exercises.
 4. Never commit a secret. `.env.example` carries the keys with dummy values; `.env` and
    `.env.*` are ignored.

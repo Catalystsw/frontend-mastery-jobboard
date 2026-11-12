@@ -1,7 +1,7 @@
 # Architecture
 
 This repo is not just where the exercises live — it is the worked example of the
-architecture module 9 teaches. If the structure rots, the lesson rots with it.
+architecture module 10 teaches. If the structure rots, the lesson rots with it.
 
 Two rules explain everything below:
 
@@ -75,7 +75,7 @@ would blank out work the student already finished on an earlier stage.
 | `module-6/data-layer` | `src/features/jobs/api/`, `src/features/applications/`, `src/app/routes.tsx` | |
 | `module-7/next-rendering` | a Next.js port — its own app, not a folder in this one | |
 | `module-8/perf-and-tests` | `e2e/`, the performance budget config | |
-| `module-10/capstone` | assembles the lot; merges into `main` | |
+| `module-9/capstone` | assembles the lot; merges into `main` | |
 
 **Adding a stage:** pick the paths from this table, create them, write the solution, then
 `pnpm stage:publish <stage>` and `pnpm stage:verify <stage>`. If you need a path that is
@@ -107,9 +107,9 @@ later module's lesson. Each one is marked in place:
 
 | Where | What is rough | Fixed in |
 |---|---|:--:|
-| `features/jobs/hooks/use-job-search.ts` | Fetch in an effect, loading flag set by hand, sequence number guarding stale responses. | M8 |
-| `features/applications/hooks/use-applications.ts` | Optimistic update with no rollback. | M8 |
-| `features/search/components/search-autocomplete.tsx` | The debounced searcher lives in a ref because the timer has to survive re-renders. | M7 |
+| `features/jobs/hooks/use-job-search.ts` | Fetch in an effect, loading flag set by hand, sequence number guarding stale responses. | M6 |
+| `features/applications/hooks/use-applications.ts` | Optimistic update with no rollback. | M6 |
+| `features/search/components/search-autocomplete.tsx` | The debounced searcher lives in a ref because the timer has to survive re-renders. | M5 |
 | `src/utils/debounce.ts`, `throttle.ts` | `this` is aliased on purpose so a debounced *method* stays callable. | — correct as written |
 
 Where the linter disagrees with one of these, the `eslint-disable` carries the reason and
