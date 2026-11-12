@@ -5,7 +5,7 @@ type ApplyState = 'idle' | 'pending' | 'done'
 
 /**
  * Optimistic apply: the button flips the moment it is pressed and the server confirms
- * afterwards. Module 8 replaces this with a TanStack Query mutation — including the
+ * afterwards. Module 6 replaces this with a TanStack Query mutation — including the
  * rollback this version does not have yet.
  */
 export function useApplications() {
