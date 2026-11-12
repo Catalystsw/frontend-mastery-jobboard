@@ -1,5 +1,5 @@
 // #note EventEmitter — subscribe, unsubscribe, emit. The pattern under every toast system,
-// #note websocket client and pub/sub layer you'll write. Module 7's toasts use this one.
+// #note websocket client and pub/sub layer you'll write. Module 5's toasts use this one.
 // #note The listener store and `listenerCount` are given to you; the four methods are yours.
 
 export type Listener<Payload> = (payload: Payload) => void
