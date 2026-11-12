@@ -15,7 +15,7 @@ export const EMPTY_FILTERS: JobFilters = {
  *
  * The sequence number and the AbortController do different jobs — the controller stops
  * the wasted network, the sequence number keeps the UI correct when a response the
- * controller did not catch lands late. Module 8 replaces both with TanStack Query.
+ * controller did not catch lands late. Module 6 replaces both with TanStack Query.
  */
 export function useJobSearch(searchTerm: string, settleMs = 250) {
   const [filters, setFilters] = useState<JobFilters>(EMPTY_FILTERS)
@@ -36,7 +36,7 @@ export function useJobSearch(searchTerm: string, settleMs = 250) {
     const seq = ++requestSeq.current
     const controller = new AbortController()
     // Fetching in an effect and flipping a loading flag is exactly the pattern React
-    // tells you to hand to a library — and in module 8 we do, with TanStack Query.
+    // tells you to hand to a library — and in module 6 we do, with TanStack Query.
     // Until then this is the honest hand-rolled version, kept so the student sees what
     // the library is actually doing for them.
     // eslint-disable-next-line react-hooks/set-state-in-effect
