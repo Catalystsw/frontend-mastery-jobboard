@@ -8,7 +8,7 @@ export interface VisibleRangeInput {
   scrollTop: number
   /** The height of the scroll container itself, in pixels. */
   viewportHeight: number
-  /** Every row is the same height in this stage. Variable heights are module 7. */
+  /** Every row is the same height. Variable heights are out of scope for this program. */
   rowHeight: number
   /** How many rows exist in total. */
   count: number
