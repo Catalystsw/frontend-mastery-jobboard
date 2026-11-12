@@ -7,8 +7,10 @@ this folder imports from it.
 
 Each exercise is type-level work: the task is to make `exercise.ts` compile — including
 every `// @ts-expect-error` line actually erroring — without loosening the repo's
-`tsconfig.json`. `solution.ts` is the reference answer. Run `pnpm typecheck` to check
-either file on its own terms by temporarily swapping the import, or just read the diff.
+`tsconfig.json`. `solution.ts` is the reference answer. `pnpm typecheck:exercises` checks
+your exercises — red until every one is solved. The repo's own `pnpm typecheck` skips the
+unsolved `exercise.ts` files, so an exercise in progress never blocks CI, but it still
+checks every `solution.ts`.
 
 | Folder | Covers |
 |---|---|

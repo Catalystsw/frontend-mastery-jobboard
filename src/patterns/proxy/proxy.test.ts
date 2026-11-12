@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect } from 'vitest'
 import { createReactiveUser, type UserProfile, type ProxyAuditLog } from './proxy'
 
 describe('Proxy Pattern — Validation & Audit Trap', () => {

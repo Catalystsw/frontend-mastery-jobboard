@@ -19,6 +19,8 @@ export class AppConfig {
     this.apiUrl = apiUrl
     this.maxRetries = maxRetries
     this._activeTheme = 'dark'
+    // Storing `this` in the module-level slot is the pattern: every later call gets this object.
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     instance = this
   }
 
