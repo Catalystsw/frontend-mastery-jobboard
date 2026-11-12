@@ -8,7 +8,7 @@ import { AppShell } from './layout/app-shell'
  * The composition root. It owns no business logic — it wires the features together and
  * holds only the state that genuinely spans them: what is typed, and what is selected.
  *
- * Everything else lives behind a feature's front door. When module 8 introduces the
+ * Everything else lives behind a feature's front door. When module 6 introduces the
  * router, the selection moves into the URL and this file gets smaller, not larger.
  */
 export function App() {
