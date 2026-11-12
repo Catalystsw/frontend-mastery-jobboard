@@ -49,7 +49,7 @@ in.
 
 **No** — and this is the answer that separates people. Debounce reduces the *number* of
 requests. Two that do go out can still come back out of order, and the stale one can win.
-That needs an `AbortController` or a request id, which is module 7's autocomplete.
+That needs an `AbortController` or a request id, which is module 5's autocomplete.
 
 ---
 
