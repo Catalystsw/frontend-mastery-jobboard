@@ -67,4 +67,22 @@ describe('Web Platform Observers', () => {
     cleanup()
     expect(disconnectSpy).toHaveBeenCalledTimes(1)
   })
+
+  it('reports DOM mutations, and stops after disconnect', async () => {
+    const target = document.getElementById('target')!
+    const onMutate = vi.fn()
+    const flush = () => new Promise((resolve) => setTimeout(resolve, 0))
+
+    const cleanup = observeMutations(target, onMutate)
+
+    target.appendChild(document.createElement('span'))
+    await flush()
+    expect(onMutate).toHaveBeenCalledTimes(1)
+    expect(onMutate.mock.calls[0]![0][0]).toMatchObject({ type: 'childList' })
+
+    cleanup()
+    target.appendChild(document.createElement('span'))
+    await flush()
+    expect(onMutate).toHaveBeenCalledTimes(1)
+  })
 })

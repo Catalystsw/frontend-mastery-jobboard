@@ -18,5 +18,8 @@
       "@/*": ["src/*"]
     }
   },
-  "include": ["src", "scripts", "vitest.config.ts"]
+  "include": ["src", "scripts", "vitest.config.ts"],
+  // An unsolved exercise does not compile — that is the exercise. The solutions stay in,
+  // so the reference answers are still checked; `pnpm typecheck:exercises` checks the rest.
+  "exclude": ["src/typescript-exercises/**/exercise.ts"]
 }

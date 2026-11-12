@@ -46,7 +46,6 @@ describe('Modal Overlay & Focus Trap', () => {
     )
 
     const closeBtn = screen.getByLabelText('Close modal')
-    const btn1 = screen.getByTestId('btn-1')
     const btn2 = screen.getByTestId('btn-2')
 
     // Focus starts on first interactive element (closeBtn)

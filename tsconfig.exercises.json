@@ -1,0 +1,7 @@
+{
+  // The module 4 exercises on their own. Red until every exercise is solved — including
+  // every `// @ts-expect-error` line actually erroring.
+  "extends": "./tsconfig.json",
+  "include": ["src/typescript-exercises"],
+  "exclude": []
+}
