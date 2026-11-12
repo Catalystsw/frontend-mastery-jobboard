@@ -32,6 +32,9 @@ export function JobListContainer({ fetcher }: JobListContainerProps) {
   }, [fetcher])
 
   useEffect(() => {
+    // Fetch-on-mount in an effect is the classic container, kept on purpose: this exercise is
+    // about the split, not the fetching. Module 6 replaces it with TanStack Query.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     void loadData()
   }, [loadData])
 
