@@ -2,10 +2,10 @@
 
 The exercise repository for [Catalyst](https://catalystai.llc)'s **Frontend Mastery** program.
 
-One product, built across the whole program. Every module ships a slice of it; module 12
+One product, built across the whole program. Every module ships a slice of it; module 9
 assembles the slices into a deployed application you can defend in an interview. Nothing
 here is a throwaway demo — the `debounce` you write in module 3 is still running inside the
-autocomplete in module 7, and both are still in the app you deploy at the end.
+autocomplete in module 5, and both are still in the app you deploy at the end.
 
 `main` holds the assembled product and the shared foundation: the domain model, the fake API,
 the fixtures and the tooling. **The exercises live on branches.**
@@ -28,7 +28,7 @@ Then pick up your first exercise:
 
 ```bash
 git checkout module-3/utils/start
-pnpm test:watch     # red — 39 failing. That is the starting line.
+pnpm test:watch     # red. That is the starting line — STAGE.md has the count.
 ```
 
 ---
@@ -71,20 +71,18 @@ step is where most of the learning actually happens — not in getting to green.
 | Branch base | Module | What you build | Status |
 |---|:--:|---|:--:|
 | `module-1/setup` | 1 | The workspace, the three-branch workflow, and the scorer that turns your diagnostic marks into the module to open first | ✅ |
-| `module-2/browser-lab` | 2 | Instrument a slow page: reflow vs repaint, compositor-only animation, flame charts | |
+| `module-2/browser-lab` | 2 | Instrument a slow page: windowing, frame-aligned handlers, read/write batching, and a measurement you can show | ✅ |
 | `module-3/utils` | 3 | The utility library: `debounce`, `throttle`, `deepClone`, `EventEmitter` | ✅ |
 | `module-4/domain-types` | 4 | Typed domain model, discriminated states, schema validation, typed API client | |
 | `module-5/feed-ui` | 5 | The listings feed in React — composition, keys, effects, a profiler pass | |
-| `module-6/typed-components` | 6 | Typed primitives: polymorphic `Button`, generic `Select`, typed fields | |
-| `module-7/autocomplete` | 7 | Search autocomplete: debounce, race conditions, keyboard nav, ARIA combobox | ✅ |
-| `module-7/overlays` | 7 | Apply modal, filter dropdown, tabs, toasts — focus trap, portals, live regions | |
-| `module-7/virtual-list` | 7 | Virtualized listings by hand: windowing, pooling, recycling | |
-| `module-8/data-layer` | 8 | TanStack Query + Router: caching, optimistic apply, filters as URL state | |
-| `module-9/next-rendering` | 9 | Next.js port: public SEO pages vs authenticated dashboard, server actions | |
-| `module-10/perf-and-tests` | 10 | Baseline → budget → fix, with Vitest + Playwright + MSW in CI | |
-| `module-12/capstone` | 12 | Assemble everything, wire auth, deploy, write the architecture story | |
+| `module-5/autocomplete` | 5 | Search autocomplete: debounce, race conditions, keyboard nav, ARIA combobox | ✅ |
+| `module-5/overlays` | 5 | Apply modal, filter dropdown, tabs, toasts — focus trap, portals, live regions | |
+| `module-6/data-layer` | 6 | TanStack Query + Router: caching, optimistic apply, filters as URL state | |
+| `module-7/next-rendering` | 7 | Next.js port: public SEO pages vs authenticated dashboard, server actions | |
+| `module-8/perf-and-tests` | 8 | Baseline → budget → fix, with Vitest + Playwright + MSW in CI | |
+| `module-9/capstone` | 9 | Assemble everything, wire auth, deploy, write the architecture story | |
 
-13 stages × 3 branches, plus `main` — forty branches in all.
+Three branches per stage, plus `main`.
 
 ---
 
@@ -97,17 +95,27 @@ one branch per video, namespaced by module:
 module-<N>/v<V>-<slug>/<start|guided|solution>
 ```
 
-Video numbers arrive with each module's lesson map, so today the branches carry the module
-and the slug only:
+Video numbers arrive with each module's lesson map, so the branches carry the module and
+the slug only:
 
 ```
-module-3/utils/start          ← now
-module-3/v4-utils/start       ← once module 3's lesson map exists
+module-2/browser-lab/start
+module-3/utils/start
 ```
 
 The end state of each video gets tagged `m<N>-v<V>-end` on its `solution` branch, so a
-student who fell behind runs `git checkout m3-v4-end` and is caught up. Tags land with the
-numbers.
+student who fell behind runs `git checkout m2-v10-end` and is caught up. Modules 1, 2 and 3
+have their lesson maps, so their tags are published:
+
+| Tag | Stage | The lesson it ends |
+|---|---|---|
+| `m1-v7-end` | `module-1/setup` | 1 · 7 — workspace, Git and the repo conventions |
+| `m2-v10-end` | `module-2/browser-lab` | 2 · 10 — instrument a slow page and prove the fix |
+| `m3-v10-end` | `module-3/utils` | 3 · 10 — the interview toolbelt, part 2 |
+
+The branch names stay on the slug form even where the video number is known: they are
+printed in the decks and typed by hand from a paused video, and renaming them would break
+every link already recorded.
 
 ---
 
@@ -117,7 +125,7 @@ numbers.
 src/
   app/           the composition root — wires features together, owns no business logic
   features/      business subdomains: jobs · search · applications
-  ui/            design-system primitives (module 6 onward)
+  ui/            design-system primitives (module 5 onward)
   domain/        Job, Employer, Application — the shared language, types only
   data/          fixtures/ seed data · server/ the fake backend
   utils/         the interview utility library — framework-free
@@ -185,8 +193,8 @@ Each stage branch carries a config saying which paths belong to it:
 
 ```json
 {
-  "stage": "module-7/autocomplete",
-  "module": 7,
+  "stage": "module-5/autocomplete",
+  "module": 5,
   "video": null,
   "title": "Search autocomplete",
   "strip": ["src/components/autocomplete"]
@@ -195,7 +203,7 @@ Each stage branch carries a config saying which paths belong to it:
 
 The scope matters. A stage branches from the previous stage's solution, so without `strip`
 the stripper would also blank out work the student already finished —
-`module-7/autocomplete/start` would ship a broken `debounce` and fail for the wrong reason.
+`module-5/autocomplete/start` would ship a broken `debounce` and fail for the wrong reason.
 
 ### Markers
 
@@ -228,7 +236,7 @@ reach past a front door, or a utility that grew a dependency all fail the build.
 1. Never hand-edit `guided` or `start`. Regenerate them.
 2. Keep stage path ownership disjoint — see the table in `ARCHITECTURE.md`. Two stages that
    strip overlapping paths blank out work the student already finished.
-3. Solutions never merge into `main` except through `module-12/capstone` — `main` is the
+3. Solutions never merge into `main` except through `module-9/capstone` — `main` is the
    assembled product, not a pile of exercises.
 4. Never commit a secret. `.env.example` carries the keys with dummy values; `.env` and
    `.env.*` are ignored.

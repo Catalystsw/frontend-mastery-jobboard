@@ -1,6 +1,6 @@
 # `src/ui` — design-system primitives
 
-Empty until module 6, on purpose.
+Empty until module 5, on purpose.
 
 A component belongs here when it takes props and emits events and has **no idea what a job
 is**. `Button`, `Select`, `Field`, `Modal`, `Dropdown`, `Tabs`, `Toast`, `VirtualList`.
@@ -15,5 +15,5 @@ Filled by:
 
 | Module | Adds |
 |---|---|
-| 6 | `button/` · `select/` · `field/` — typed, polymorphic, variant-driven |
-| 7 | `modal/` · `dropdown/` · `tabs/` · `toast/` · `virtual-list/` |
+| 5 | `button/` · `select/` · `field/` — typed, polymorphic, variant-driven |
+| 5 | `modal/` · `dropdown/` · `tabs/` · `toast/` · `virtual-list/` |
