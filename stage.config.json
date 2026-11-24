@@ -1,10 +1,11 @@
 {
-  "stage": "module-5/autocomplete",
+  "stage": "module-5/feed-ui",
   "module": 5,
   "video": null,
-  "title": "Search autocomplete",
+  "title": "The listings feed",
   "strip": [
-    "src/features/search"
+    "src/features/jobs/components",
+    "src/features/jobs/hooks"
   ],
-  "note": "Only this stage's paths are stripped. src/utils stays solved — the student wrote it in module-3/utils and this component imports its debounce. The feature owns its own folder, so nothing else in the tree is touched."
+  "note": "The stage owns src/features/jobs/components and hooks (ARCHITECTURE.md), but only feed/feed-page.tsx carries markers, so it is the only file that changes. start and guided are not stubs: they are the feed built the obvious way, with the query in FeedPage, so there is a real page to profile. The behaviour tests pass on all three branches; the render test (a keystroke renders neither FeedHeader nor CompanySidebar) is the one that keeps start and guided red."
 }

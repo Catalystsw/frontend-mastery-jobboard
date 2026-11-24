@@ -1,73 +1,91 @@
-# Stage module-5/autocomplete — the search box
+# Stage module-5/feed-ui — the listings feed
 
-**Module 5 · React, Deeply — lesson 5, Build the search autocomplete**
+**Module 5 · React, Deeply — lesson 9, Build the listings feed, profile it, fix it**
 
-Build the job board's search autocomplete from scratch. No combobox library, no headless UI.
+The job board's listings feed: search by title or company, filter by remote, seniority and
+company, save a listing and watch the header's count go up, over 300 listings. It is built the
+obvious way, with every piece of state in `FeedPage`. That is not a trap for its own sake: it is
+the shape most production feeds start in, and it gives the profiler something to find.
 
-This is the most frequently asked "build this live" question in frontend interviews, and it is
-asked precisely because five separate skills collide in one component. Most candidates get three
-of them.
+This stage is a refactor. The page already works, and it still works the same way when you are
+done. What changes is **which components render when you type.**
 
-## What's actually being tested
+## The page
 
-| # | Skill | The failure mode |
-|---|---|---|
-| 1 | Debouncing | A request per keystroke. Reuse the `debounce` you wrote in `module-3/utils`. |
-| 2 | **Race conditions** | You type `react`, then ` engineer`. The first response lands last and overwrites the newer results. This is the one that separates mid from senior. |
-| 3 | Keyboard access | Arrows don't wrap, Enter submits the form, Escape does nothing, the caret jumps because you forgot `preventDefault`. |
-| 4 | ARIA combobox | No `role`, no `aria-expanded`, no `aria-activedescendant` — or worse, moving DOM focus into the list. |
-| 5 | State honesty | Loading, empty and error all rendered as "nothing happened". |
-
-## The contract
-
-```ts
-<SearchAutocomplete
-  label="Search jobs"
-  fetchSuggestions={(query, signal) => Promise<JobSuggestion[]>}
-  onSelect={(suggestion) => void}
-  debounceMs={250}
-  minQueryLength={2}
-/>
+```
+FeedPage                  query · filters · savedIds
+├── FeedHeader            the saved count
+│   └── SavedCount
+├── FilterBar             remote · seniority · company
+├── SearchBox             onSearch={setQuery}
+├── ListingResults        filters the listings in render
+│   └── ListingCard × 300
+└── CompanySidebar        who is hiring
 ```
 
-14 tests describe the behaviour precisely. Read them before you write anything — in a real
-interview, the questions you ask before coding are half the score.
+All of it lives in `src/features/jobs/components/feed/`. `pnpm dev` opens on the feed; the
+search-and-detail board from the autocomplete stage is at `/board`.
 
-## Things worth knowing before you start
+## What you do
 
-- **`aria-activedescendant`, not focus.** In a combobox, DOM focus stays in the input the whole
-  time. The input points at the active option's `id`. Moving real focus into the list breaks
-  typing and is the most common accessibility mistake in this component.
-- **`onMouseDown`, not `onClick`,** for selecting an option. `click` fires after `blur`, and by
-  then the list has already closed — so your handler never runs.
-- **Sequence numbers *and* `AbortController`.** The sequence number keeps the UI correct; the
-  abort stops wasted network. An interviewer will ask for both, and they solve different problems.
-- **Build the debounced function once.** Created in the render body, it's a new function on every
-  render, and a fresh debounce debounces nothing.
+| # | Step | What it looks like |
+|---|---|---|
+| 1 | **Read the naive build** | `feed-page.tsx`: the query, the filters and the saved ids all live in `FeedPage`. |
+| 2 | **Predict** | Before you open the profiler, write down which components re-render on one keystroke, and which on one save. Lessons 2 and 8 are enough to get it exactly right. |
+| 3 | **Profile** | React DevTools, the steps below. Check your prediction against the tool. |
+| 4 | **Move the state down** | The query goes to the only components that use it. No `memo`. |
+| 5 | **Profile again** | The same five keystrokes. Compare the two flamegraphs. |
+
+## Profiling it
+
+Install [React Developer Tools](https://react.dev/learn/react-developer-tools), run `pnpm dev`
+and open the feed. Profile the dev server, not `pnpm build`: the production build leaves the
+profiler out.
+
+| Step | Where |
+|---|---|
+| Highlight updates | DevTools settings → **General** → "Highlight updates when components render" |
+| Record why each rendered | DevTools settings → **Profiler** → "Record why each component rendered while profiling" |
+| Record, type five letters, stop | the **Profiler** tab: ● record, type `react` into the search box, ■ stop |
+| Read the flamegraph | grey: did not render · yellow: slow · click a bar to see why it rendered |
+
+What you should find on `start`: about one commit per keystroke, and in every one of them
+`FeedHeader` and `CompanySidebar` render, with the reason **"The parent component rendered."**
+Neither shows anything that depends on the query, and `FilterBar` renders for the same reason.
+`ListingResults` is the widest bar, with its cards under it. After the fix, a keystroke renders
+the search box, the results and the cards, and everything else is grey.
 
 ## Working through it
 
 ```bash
-git checkout module-5/autocomplete/start
+git checkout module-5/feed-ui/start
 pnpm install
-pnpm test:watch        # red, 14 failing
+pnpm dev               # the feed, built the obvious way
+pnpm test:watch        # one red test: the profiler's finding, written down
 ```
 
-The tests are ordered from the obvious to the brutal. If you're passing everything except
-`ignores a slow response that arrives after a newer one`, you've written the version that ships
-to production and then produces a bug report nobody can reproduce.
+12 tests describe the feed. Eleven of them (the data, search, filters and saving) pass before
+your change and still pass after it. That is the point of a refactor: they are your proof that
+nothing broke. One is red: it counts renders the way the profiler does, and passes only when a
+keystroke stops rendering the header and the sidebar.
 
-Stuck? `git checkout module-5/autocomplete/guided -- src/features/search/`
+Stuck? `git checkout module-5/feed-ui/guided -- src/features/jobs/components/feed/feed-page.tsx`
 
 ## Acceptance
 
-- `pnpm test` — all green: 14 here, plus the utility tests already on the branch
-- `pnpm typecheck` — clean
-- Keyboard-only: you can search, choose and submit without touching the mouse
-- The list never shows results for a query that is no longer in the input
+- `pnpm test` all green: 12 here, plus the 47 utility and autocomplete tests already on the branch
+- `pnpm typecheck` and `pnpm lint` clean
+- No `memo`, `useMemo` or `useCallback` added. The fix is where the state lives
+- Re-profiled with the same five keystrokes: `FeedHeader` and `CompanySidebar` are grey
+
+## Deliverable
+
+The fixed feed on a branch off `module-5/feed-ui/start`, in a PR with two flamegraph
+screenshots: one recorded before the change and one after, the same five keystrokes each time.
 
 ## Where it goes
 
-This is the search box at the top of the job board. Module 6 replaces the hand-rolled
-fetching with TanStack Query and the term moves into the URL — at which point you'll see exactly
-which parts of this component were state management and which were UI.
+Moving state down is the second rung of the fix order this module teaches: derive, move state
+down, pass children, split context, and memo last. Module 6 moves the filters into the URL, and
+module 8 measures the list again against a budget. A keystroke still renders 300 cards after this
+fix, and that is a different problem with a different tool.

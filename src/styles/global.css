@@ -278,3 +278,62 @@ h1, h2, h3 { letter-spacing: -0.02em; }
 
 .detail-foot { font-size: 12px; color: var(--muted); text-align: center; }
 .empty-detail { color: var(--muted); text-align: center; padding: 46px 22px; }
+
+/* -------------------------------------------------------------------- feed */
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+.feed-topbar { grid-template-columns: auto auto; justify-content: space-between; }
+.saved-count {
+  display: inline-flex; align-items: baseline; gap: 6px;
+  border: 1px solid var(--line-strong); color: var(--ink-2);
+  padding: 9px 14px; border-radius: 11px; font-size: 14px; font-weight: 500;
+}
+.saved-count strong { color: var(--ink); font-weight: 700; }
+
+.feed-layout { grid-template-columns: 232px minmax(0, 1fr) 280px; }
+@media (max-width: 1180px) { .feed-layout { grid-template-columns: 210px minmax(0, 1fr); } .company-sidebar { display: none; } }
+@media (max-width: 860px) { .feed-layout { grid-template-columns: 1fr; } }
+
+.select-field { display: grid; gap: 7px; font-size: 13px; font-weight: 600; color: var(--ink-2); }
+.select-field select {
+  font: inherit; font-weight: 500; color: var(--ink);
+  background: var(--surface-2); border: 1px solid var(--line-strong);
+  border-radius: 10px; padding: 8px 10px; cursor: pointer;
+}
+
+.feed-main { display: grid; gap: 18px; min-width: 0; }
+.feed-search input {
+  width: 100%;
+  background: var(--surface-2);
+  border: 1px solid var(--line-strong);
+  border-radius: 12px;
+  padding: 11px 14px;
+  color: var(--ink);
+}
+.feed-search input::placeholder { color: var(--muted); }
+.feed-search input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
+
+.listing-card .job-title, .listing-card .job-employer { font-weight: inherit; }
+.listing-card h3.job-title { font-weight: 650; }
+.listing-card mark { background: rgba(139, 92, 246, 0.32); color: inherit; border-radius: 4px; padding: 0 2px; }
+
+.save-button {
+  border: 1px solid var(--line-strong); color: var(--ink-2);
+  padding: 5px 11px; border-radius: 999px; font-size: 12.5px; font-weight: 600;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.save-button:hover { background: rgba(255,255,255,.05); color: var(--ink); }
+.save-button.is-saved { color: #fde68a; border-color: rgba(253, 230, 138, 0.4); background: rgba(253, 230, 138, 0.08); }
+
+.company-sidebar {
+  position: sticky; top: 86px; display: grid; gap: 14px;
+  background: linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.012));
+  border: 1px solid var(--line); border-radius: var(--radius); padding: 18px;
+}
+.rail-heading { font: 600 13px/1.2 var(--mono); text-transform: uppercase; letter-spacing: 1.6px; color: var(--muted); }
+.company-list { list-style: none; display: grid; gap: 12px; }
+.company-row { display: grid; grid-template-columns: 32px minmax(0, 1fr) auto; gap: 10px; align-items: center; }
+.company-name { display: grid; min-width: 0; font-size: 13.5px; }
+.company-name span { font-size: 12px; color: var(--muted); }
+.company-roles { font: 600 11.5px/1 var(--mono); color: var(--ink-2); }
+.logo.sm { width: 32px; height: 32px; border-radius: 9px; font-size: 11.5px; }

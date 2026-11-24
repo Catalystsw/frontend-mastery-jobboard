@@ -7,5 +7,6 @@
 export { JobFilters } from './components/job-filters'
 export { JobList } from './components/job-list'
 export { JobDetail } from './components/job-detail'
+export { FeedPage } from './components/feed/feed-page'
 export { useJobSearch, EMPTY_FILTERS } from './hooks/use-job-search'
 export { fetchJobs } from './api/jobs-api'
