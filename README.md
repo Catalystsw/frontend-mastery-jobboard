@@ -44,6 +44,10 @@ thing that changes is how much of the implementation is already there.
 | `<stage>/guided` | The same tests, plus numbered `TODO` steps and the reasoning behind each. An escape hatch — not an answer key. |
 | `<stage>/solution` | The finished implementation, every test green, plus `NOTES.md` on the trade-offs and what an interviewer will push on. |
 
+One stage turns this round: `module-5/feed-ui` is a refactor, so its `start` is a working feed
+built the obvious way, not a stub. Its behaviour tests are green on all three branches, and one
+test, the profiler's finding, stays red until the state moves.
+
 ### The loop
 
 ```bash
@@ -74,7 +78,7 @@ step is where most of the learning actually happens — not in getting to green.
 | `module-2/browser-lab` | 2 | Instrument a slow page: windowing, frame-aligned handlers, read/write batching, and a measurement you can show | ✅ |
 | `module-3/utils` | 3 | The utility library: `debounce`, `throttle`, `deepClone`, `EventEmitter` | ✅ |
 | `module-4/domain-types` | 4 | Typed domain model, discriminated states, schema validation, typed API client | |
-| `module-5/feed-ui` | 5 | The listings feed in React — composition, keys, effects, a profiler pass | |
+| `module-5/feed-ui` | 5 | The listings feed in React: built the obvious way, profiled, fixed by moving state down | ✅ |
 | `module-5/autocomplete` | 5 | Search autocomplete: debounce, race conditions, keyboard nav, ARIA combobox | ✅ |
 | `module-5/overlays` | 5 | Apply modal, filter dropdown, tabs, toasts — focus trap, portals, live regions | |
 | `module-6/data-layer` | 6 | TanStack Query + Router: caching, optimistic apply, filters as URL state | |
@@ -220,6 +224,17 @@ Inside solution files, the stripper reads:
 
 `#hint` lines become `TODO n:` comments in `guided` and disappear in `start`.
 **Test files and fixtures are never touched by the stripper.**
+
+Several `#placeholder` lines in a row stand for several lines, and a bare one for none, which is
+how a `start` that is a different working version gets written. Between JSX children, where a
+`//` line would render as text, every marker also works as a JSX comment on its own line:
+
+```tsx
+{/* #placeholder <SearchBox onSearch={setQuery} /> */}
+{/* #region solution */}
+<SearchableListings />
+{/* #endregion */}
+```
 
 ### CI
 

@@ -69,7 +69,7 @@ would blank out work the student already finished on an earlier stage.
 | `module-2/browser-lab` | `src/features/perf-lab/` | ✅ built |
 | `module-3/utils` | `src/utils/` | ✅ built |
 | `module-4/domain-types` | `src/domain/` | |
-| `module-5/feed-ui` | `src/features/jobs/components/`, `src/features/jobs/hooks/` | |
+| `module-5/feed-ui` | `src/features/jobs/components/`, `src/features/jobs/hooks/` | ✅ built |
 | `module-5/autocomplete` | `src/features/search/` | ✅ built |
 | `module-5/overlays` | `src/ui/modal/`, `src/ui/dropdown/`, `src/ui/tabs/`, `src/ui/toast/` | |
 | `module-6/data-layer` | `src/features/jobs/api/`, `src/features/applications/`, `src/app/routes.tsx` | |
@@ -90,8 +90,8 @@ The shape above is designed so that no module has to move another module's files
   one feature that exists to be measured, not shipped.
 - **Module 4** replaces the hand-written types in `domain/` with schema-derived ones, and
   puts the validators next to them. The folder's boundary does not change.
-- **Module 5** fills `features/jobs/components/` properly — today's components are the
-  reference implementation the stage strips — and creates `ui/` for real: `ui/modal`,
+- **Module 5** adds the listings feed in `features/jobs/components/feed/`, the page the
+  profiler lesson measures and fixes, and creates `ui/` for real: `ui/modal`,
   `ui/dropdown`, `ui/tabs`, `ui/toast`, plus the search box in `features/search/`.
 - **Module 6** takes over `features/jobs/api/` and `features/applications/`, replacing the
   hand-rolled fetch-in-an-effect with TanStack Query, and introduces `app/routes.tsx` so the
