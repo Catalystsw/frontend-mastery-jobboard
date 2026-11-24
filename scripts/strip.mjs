@@ -13,12 +13,19 @@
  *
  *   // #placeholder throw new Error('Not implemented')
  *      Optional. Overrides what replaces the region. Must sit directly above `#region`.
+ *      Several in a row stand for several lines, in order: that is how a stage whose `start`
+ *      is a different working version, not a stub, says what the version looks like. One
+ *      space separates the marker from the line; any more are the line's own indentation.
+ *      A bare `// #placeholder` stands for nothing, so a region can vanish from both.
  *
  *   // #hint 1 Keep the timer id outside the returned function.
  *      Kept (as `// TODO 1:`) in `guided`, removed in `start`.
  *
  *   // #note anything the student should read in every version
  *      Kept everywhere. Use for the brief, never for the answer.
+ *
+ * Between JSX children a `//` comment renders as text, so every marker also works as a JSX
+ * comment on a line of its own — see `markerOf` below.
  *
  * Scope: only the current stage's own files are stripped. Work the student already did in an
  * earlier stage stays solved — `stage.config.json` on the branch says which paths are in scope.
@@ -81,49 +88,70 @@ async function* walk(dir) {
 
 const indentOf = (line) => line.slice(0, line.length - line.trimStart().length)
 
+// A marker is a comment on a line of its own: `// #region solution` in code, or the same
+// marker as a JSX comment between JSX children, where a `//` line would render as text:
+//
+//   {/* #placeholder <SearchBox onSearch={setQuery} /> */}
+//   {/* #region solution */}
+//   <SearchableListings />
+//   {/* #endregion */}
+//
+// A `#hint` or `#note` written as a JSX comment stays a JSX comment in `guided`.
+const markerOf = (trimmed) => {
+  const line = trimmed.match(/^\/\/\s*(#.*)$/)
+  if (line) return { text: line[1], jsx: false }
+  const jsx = trimmed.match(/^\{\/\*\s*(#.*?)\s*\*\/\}$/)
+  if (jsx) return { text: jsx[1], jsx: true }
+  return null
+}
+
+const commentLine = (text, jsx) => (jsx ? `{/* ${text} */}` : `// ${text}`)
+
 function transform(source, mode) {
   const lines = source.split('\n')
   const output = []
-  let pendingPlaceholder = null
+  let pendingPlaceholder = []
   let inRegion = false
   let changed = false
 
   for (const line of lines) {
-    const trimmed = line.trim()
+    const marker = markerOf(line.trim())
+    const text = marker?.text ?? ''
 
     if (inRegion) {
-      if (/^\/\/\s*#endregion\b/.test(trimmed)) {
-        inRegion = false
-        pendingPlaceholder = null
-      }
+      if (marker && /^#endregion\b/.test(text)) inRegion = false
       continue // drop everything inside the region, including the markers
     }
 
-    const placeholderMatch = trimmed.match(/^\/\/\s*#placeholder\s+(.*)$/)
+    const placeholderMatch = marker && text.match(/^#placeholder(?:\s(.*))?$/)
     if (placeholderMatch) {
-      pendingPlaceholder = placeholderMatch[1].trim()
+      pendingPlaceholder.push(placeholderMatch[1]?.trimEnd() ?? null)
       continue
     }
 
-    if (/^\/\/\s*#region\s+solution\b/.test(trimmed)) {
+    if (marker && /^#region\s+solution\b/.test(text)) {
       inRegion = true
       changed = true
-      output.push(`${indentOf(line)}${pendingPlaceholder ?? DEFAULT_PLACEHOLDER}`)
+      const standIns = pendingPlaceholder.length ? pendingPlaceholder : [DEFAULT_PLACEHOLDER]
+      for (const standIn of standIns) {
+        if (standIn !== null) output.push(`${indentOf(line)}${standIn}`)
+      }
+      pendingPlaceholder = []
       continue
     }
 
-    const hintMatch = trimmed.match(/^\/\/\s*#hint\s+(\d+)\s+(.*)$/)
+    const hintMatch = marker && text.match(/^#hint\s+(\d+)\s+(.*)$/)
     if (hintMatch) {
       changed = true
       if (mode === 'guided') {
-        output.push(`${indentOf(line)}// TODO ${hintMatch[1]}: ${hintMatch[2]}`)
+        output.push(`${indentOf(line)}${commentLine(`TODO ${hintMatch[1]}: ${hintMatch[2]}`, marker.jsx)}`)
       }
       continue // `start` gets no hint at all
     }
 
-    const noteMatch = trimmed.match(/^\/\/\s*#note\s+(.*)$/)
+    const noteMatch = marker && text.match(/^#note\s+(.*)$/)
     if (noteMatch) {
-      output.push(`${indentOf(line)}// ${noteMatch[1]}`)
+      output.push(`${indentOf(line)}${commentLine(noteMatch[1], marker.jsx)}`)
       continue
     }
 
